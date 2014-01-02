@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 BlackBerry Limited.
+/* Copyright (c) 2012 Research In Motion Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 #include <bb/cascades/Page>
 #include <bb/cascades/QmlDocument>
+
+#include <QDir>
 
 using namespace bb::cascades;
 
@@ -38,16 +40,28 @@ PullMyBeardApp::PullMyBeardApp()
 
             // Initialize the mSoundManager with a directory that resides in the
             // assets directory and that only contains playable files.
-            mSoundManager = new SoundManager("sounds/");
+            // setup shared logs folder
+            QString audioFilePath = QDir::current().absoluteFilePath("data");
+            QDir sharedDir(audioFilePath);
+
+            if (!sharedDir.exists()) {
+            	sharedDir.mkpath (audioFilePath);
+            }
 
             // Set the main scene for the application.
             Application::instance()->setScene(appPage);
+
+            mSoundManager = new SoundManager("sounds/");
+
+        	mSoundManager->startCapture(QDir::current().absoluteFilePath(audioFilePath) + "/recording.wav");
         }
     }
 }
 
 PullMyBeardApp::~PullMyBeardApp()
 {
+	mSoundManager->stopCapture();
+
     delete mSoundManager;
 }
 

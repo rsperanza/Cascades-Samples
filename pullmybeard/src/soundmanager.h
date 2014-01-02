@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 BlackBerry Limited.
+/* Copyright (c) 2012 Research In Motion Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <AL/alut.h>
+#include <AL/alExt.h>
+#include <pthread.h>
 
 #include <QtCore/qstring.h>
 #include <qhash.h>
@@ -71,6 +73,18 @@ public:
      * @param gain Sound gain (volume amplification) Range: ]0.0-  ]
      */
     bool play(QString fileName, float pitch, float gain);
+
+    bool startCapture(QString fileName);
+
+    bool stopCapture();
+
+
+    ALbyte* _saveBuffer;
+    bool _capturing;
+    pthread_mutex_t _captureMutex;
+    pthread_t _captureThread;
+    QString    _captureFilename;
+    ALCdevice* _captureDevice;
 
 private:
 
